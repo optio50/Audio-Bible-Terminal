@@ -1,8 +1,43 @@
 #!/bin/bash
 
-NIV() {
+###############################################################
 
-tput setaf 2
+# Setup Text Colors
+
+black=$(tput setaf 16)
+white=$(tput setaf 15)
+gray=$(tput setaf 236)
+blue=$(tput setaf 21)
+green=$(tput setaf 28)
+red=$(tput setaf 1)
+cyan=$(tput setaf 36)
+purple=$(tput setaf 128)
+brown=$(tput setaf 130)
+yellow=$(tput setaf 226)
+orange=$(tput setaf 202)
+pink=$(tput setaf 207)
+lgray=$(tput setaf 246)
+lblue=$(tput setaf 39)
+lgreen=$(tput setaf 118)
+lred=$(tput setaf 9)
+lcyan=$(tput setaf 14)
+lpurple=$(tput setaf 99)
+blgray=$(tput setab 246) # Background Light Gray
+
+BoGreen=$(tput bold; tput setaf 28) # Bold Green
+ReverseGR=$(tput setaf 28; tput rev) 	# Reverse Green
+invis=$(tput civis)			# Invisible Cursor
+norm=$(tput cnorm)			# Normal Cursor
+standout=$(tput smso)
+blink=$(tput blink)
+reverse=$(tput rev)
+bold=$(tput bold) 
+reset=$(tput sgr0)      #  Reset text attributes to normal
+
+############################################################### 
+
+Banner() {
+printf "%b\n" "${green}"
 command cat << 'EOF'
 
 Total chapters in each book 
@@ -26,61 +61,130 @@ Neh:13   Mic:7    Phil:4   Rev:22
 Esth:10  Nah:3
 EOF
 
-tput setaf 208
+printf "%b" "${orange}"
 command cat << 'EOF'
 
 Provided by NIV Dramatized Audio Bible © 2011 by Zondervan. https://www.zondervan.com/
 https://www.biblegateway.com/ The Bible in multiple languages, versions, and formats
 EOF
+printf "%b" "${reset}"
+}
 
-tput setaf 5
-printf "%b\n"
+
+NIV() {
+Banner
+printf "%b" "${purple}"
+printf "\n"
 printf "%b\n" "Type book and chapter you want to listen to.
-Example		Rom 7"
+Example:		Rom 7"
 
-tput setaf 14
+printf "%b\n" "${lcyan}"
 read -r -p "Book & Chapter
   " line
 book=$(printf "%s" "${line}" | awk '{print $1}')
 chapter=$(printf "%s" "${line}" | awk '{print $2}')
-tput cuu 27
-tput el1
-tput ed
+#tput cuu 27
+#tput el1
+#tput ed
 tput cnorm
-tput setaf 2
-printf "%b\n"
-printf "%b\n" "P for Pause & Play     Left, Right, Up, Down Arrows for Fwd & Rev"
-printf "%b\n\n"
-tput setaf 4
+printf "%b" "${green}"
+printf "%b\n" "---------------------------------------------------------------------------------------------"
+printf "%b" "${gray}"
+printf "%b\n" "P for Pause & Play     Left, Right, Up, Down Arrows for Fwd & Rev\n"
+printf "\n"
 printf "%b\n" "While playing type ctrl-Z then type bg to backgroud the process and continue
-listening while still working in the terminal. To get back type fg to foreground the process\n\n\n"
+listening while still working in the terminal. To get back type fg to foreground the process"
+printf "%b" "${green}"
+printf "%b\n" "---------------------------------------------------------------------------------------------"
 tput cnorm
 tput sgr0
-curl -s https://www.biblegateway.com/audio/dramatized/niv/${book}.${chapter} | grep -Eo 'https.*ogg' | xargs mpv
+curl -s https://www.biblegateway.com/audio/dramatized/niv/"${book}"."${chapter}" | grep -Eo 'https.*ogg' | xargs mpv
+Options
+}
+
+Multi() {
+Banner
+#tput setaf 5
+#printf "\n"
+#printf "%b\n" "Type book and chapters you want to listen to.
+#Example		Rom 3 7   this will play Romans chapter 3 thru 7"
+
+#tput setaf 14
+#read -r -p "Book & Chapters
+#  " line
+book="${1}"
+start="${2}"
+end="${3}"
+chapters=$(printf ""${start}" "${end}"")
+printf "%b" "${green}"
+printf "%b\n" "---------------------------------------------------------------------------------------------"
+printf "%b" "${gray}"
+printf "%b\n" "P for Pause & Play     Left, Right, Up, Down Arrows for Fwd & Rev\n"
+printf "\n"
+printf "%b\n" "While playing type ctrl-Z then type bg to backgroud the process and continue
+listening while still working in the terminal. To get back type fg to foreground the process"
+printf "%b" "${green}"
+printf "%b\n" "---------------------------------------------------------------------------------------------"
+printf "%b" "Playing "${book}" Chapters ${chapters}\n"
+tput sc
+for i in $(seq ${chapters}); do
+tput rc
+tput ed
+#printf "%b\n" "https://www.biblegateway.com/audio/dramatized/niv/"${book}"."${i}""
+curl -s https://www.biblegateway.com/audio/dramatized/niv/"${book}"."${i}" | grep -Eo 'https.*ogg' | xargs mpv
+done
+exit
+}
+
+Options() {
+printf "%b\n"
+printf "%b\n" "This script can take arguments if desired\n"
+scriptname=$(basename "${0}")
+printf "%b\n" "---------------------------------------------------------------------------------------------\n"
+printf "%b"  "${scriptname}" " -m  Book Firstchap Lastchap
+
+Enters multi-mode "${red}"(-m)"${reset}" and plays consecutive chapters\n\n"
+printf "%b" "${purple}" "Example:"
+printf "%b\n" "${orange}" ""${scriptname}" -m Rom 3 7  "${reset}"  will play Romans Chapters 3 thru 7"
+printf "%b\n"
+printf "%b\n" "---------------------------------------------------------------------------------------------\n"
+printf "%b" "${scriptname}" " Book Chap
+
+Enters single chapter mode and will only play a single chapter\n\n"
+printf "%b" "${purple}" "Example:" "${reset}"
+printf "%b\n" "${orange}" ""${scriptname}" Rom 3  "${reset}"  will play Romans Chapter 3"
+printf "%b\n"
+printf "%b\n" "---------------------------------------------------------------------------------------------\n"
+printf "%b" "${scriptname}" " Without argument will prompt for the book and single chapter to play\n\n"
+printf "%b" "${purple}" "Example:" "${reset}"
+printf "%b\n" "${orange}" ""${scriptname}""${reset}""
+exit
 }
 
 if [ $# -eq 0 ]
-  then
-    NIV
-    
+then
+NIV
 elif [ $# -eq 2 ]
 then
+Banner
 book=${1}
 chapter=${2}
-tput setaf 2
-printf "%b\n"
-printf "%b\n" "---------------------------------------------------------------------------------------------\n"
-printf "%b\n" "P for Pause & Play     Left, Right, Up, Down Arrows for Fwd & Rev"
-printf "%b\n\n"
-tput setaf 4
+printf "%b" "${green}"
+printf "%b" "---------------------------------------------------------------------------------------------\n"
+printf "%b" "${gray}"
+printf "%b\n" "P for Pause & Play     Left, Right, Up, Down Arrows for Fwd & Rev\n"
 printf "%b\n" "While playing type ctrl-Z then type bg to backgroud the process and continue
-listening while still working in the terminal. To get back type fg to foreground the process\n"
-printf "%b\n" "---------------------------------------------------------------------------------------------\n"
-tput cnorm
-tput sgr0
-curl -s https://www.biblegateway.com/audio/dramatized/niv/${book}.${chapter} | grep -Eo 'https.*ogg' | xargs mpv
-  
-  elif [ ! $# -eq 0 ] || [ ! $# -eq 2 ]
-  then
-    printf "%b\n" "Script requires either 0 or 2 arguments"
+listening while still working in the terminal. To get back type fg to foreground the process"
+printf "%b" "${green}"
+printf "%b" "---------------------------------------------------------------------------------------------\n"
+printf "%b" "${norm}"
+printf "%b" "${reset}"
+curl -s https://www.biblegateway.com/audio/dramatized/niv/"${book}"."${chapter}" | grep -Eo 'https.*ogg' | xargs mpv
+Options
+exit  
+elif [ $# -eq 4 ] && [ "$1" == "-m" ]
+then
+Multi "$2" "$3" "$4"
+else
+Options
 fi
