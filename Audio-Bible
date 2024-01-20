@@ -98,7 +98,7 @@ printf "%b" "${green}"
 printf "%b\n" "---------------------------------------------------------------------------------------------"
 tput cnorm
 tput sgr0
-curl -s https://www.biblegateway.com/audio/dramatized/niv/"${book}"."${chapter}" | grep -Eo 'https.*ogg' | xargs mpv
+curl -s https://www.biblegateway.com/audio/dramatized/niv/"${book}"."${chapter}" | grep -Eo 'https.*mp3' | xargs mpv
 Options
 }
 
@@ -131,7 +131,7 @@ for i in $(seq ${chapters}); do
 tput rc
 tput ed
 #printf "%b\n" "https://www.biblegateway.com/audio/dramatized/niv/"${book}"."${i}""
-curl -s https://www.biblegateway.com/audio/dramatized/niv/"${book}"."${i}" | grep -Eo 'https.*ogg' | xargs mpv
+curl -s https://www.biblegateway.com/audio/dramatized/niv/"${book}"."${i}" | grep -Eo 'https.*mp3' | xargs mpv
 done
 exit
 }
@@ -179,7 +179,7 @@ printf "%b" "${green}"
 printf "%b" "---------------------------------------------------------------------------------------------\n"
 printf "%b" "${norm}"
 printf "%b" "${reset}"
-curl -s https://www.biblegateway.com/audio/dramatized/niv/"${book}"."${chapter}" | grep -Eo 'https.*ogg' | xargs mpv
+curl -s https://www.biblegateway.com/audio/dramatized/niv/"${book}"."${chapter}" | grep -Eo 'https.*mp3' | xargs mpv
 Options
 exit  
 elif [ $# -eq 4 ] && [ "$1" == "-m" ]
